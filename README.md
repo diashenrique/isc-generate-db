@@ -1,16 +1,12 @@
-## objectscript-contest-template
-This is a template for InterSystems IRIS, Docker and ObjectScript Online contest. 
-[Topic and Terms](https://community.intersystems.com/post/join-online-programming-contest-intersystems-iris-docker-and-objectscript)
-
-## Prerequisites
-Make sure you have [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) and [Docker desktop](https://www.docker.com/products/docker-desktop) installed.
+## Generate Database
+Creating a new database, namespace, CSP/REST Application never been so easy.  
 
 ## Installation 
 
 Open terminal and clone/git pull the repo into any local directory
 
 ```
-$ git clone git@github.com:intersystems-community/objectscript-contest-template.git
+$ git clone git@github.com:diashenrique/isc-generate-db.git
 ```
 
 Open the terminal in this directory and run:
@@ -32,24 +28,51 @@ Open InterSystems IRIS terminal:
 ```
 $ docker-compose exec iris iris session iris
 USER>zn "IRISAPP"
-IRISAPP>do ##class(Contest.ObjectScript).TheUniverseQuestion()
-42
+IRISAPP>do ##class(diashenrique.Utils.GenerateDB).CreateNew()
 ```
-## How to start coding
-This repository is ready to code in VSCode with ObjectScript plugin.
-Install [VSCode](https://code.visualstudio.com/), [Docker](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-docker) and [ObjectScript](https://marketplace.visualstudio.com/items?itemName=daimor.vscode-objectscript) plugins and open the folder in VSCode.
+## Options
+You can choose the following options during the database creation:
+* Namespace Name
+* Dataset location (If empty the ClassMethod use the MGR directory)
+* Make this an Interoperability Namespace
+* If your dataset should be split into CODE and DATA or keep a single dataset for both
+* If a REST Application should be created
+  * Answering Y (Yes), a REST Application is crested and also a Dispatch class.
 
-Right-click on **docker-compose.yml** file and click Compose Restart
-
-Once docker will finish starting procedure and show:
+## Example
 
 ```
-Creating objectscript-contest-template_iris_1 ... done
+$ docker-compose exec iris iris session iris
+
+
+Do you want to create a new Database/Namespace? (Y/N) : Y
+
+Choose your Namespace name : APPCNT
+Choose the Dataset location <Path Default is mgr directory> : /opt/irisapp
+Make this an Interoperability namespace? (Y/N) : Y
+Do you want to split the database into CODE/DATA? (Y/N) : Y
+Create a REST Application? (Y/N) : Y
+
+
+=======================================
+=               SUMMARY               =
+=======================================
+
+Namespace => APPCNT
+Database => APPCNT-CODE / APPCNT-DATA
+Dataset Location => /opt/irisapp
+Interoperability => Yes
+CSP Application => /csp/appcnt
+REST Application => /rest/appcnt
+
+
+Do you want to proceed? (Y/N) : Y
+Creating Database APPCNT-CODE... done!
+Creating Database APPCNT-DATA... done!
+Creating Namespace APPCNT... done!
+Creating InterOperability mappings ... done!
+Adding InterOperability SQL privileges ... done!
+Creating CSP Application ... done!
+Creating CSP Application ... done!
+Creating REST.Dispatch.cls ... done!
 ```
-
-Click on the ObjectScript status bar and select Refresh connection in the menu.
-Wait for VSCode to make connection and show something like "localhost:32778[IRISAPP] - Connected"
-
-You can start coding after that. Open **ObjectScript.cls** in VSCode, make changes and save - the class will be compiled by IRIS on 'Save'.
-
-## Happy coding!
