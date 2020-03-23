@@ -33,11 +33,11 @@ IRISAPP>do ##class(diashenrique.Utils.GenerateDB).CreateNew()
 ## Options
 You can choose the following options during the database creation:
 * Namespace Name
-* Dataset location (If empty the ClassMethod use the MGR directory)
+* Dataset location (If empty, the ClassMethod uses the MGR directory)
 * Make this an Interoperability Namespace
 * If your dataset should be split into CODE and DATA or keep a single dataset for both
 * If a REST Application should be created
-  * Answering Y (Yes), a REST Application is crested and also a Dispatch class.
+  * Answering Y (Yes), a REST Application is created and also a Dispatch class.
 
 ## Example
 
