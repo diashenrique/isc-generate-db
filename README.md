@@ -3,7 +3,7 @@ Creating a new database, namespace, CSP/REST Application never been so easy.
 
 ## Installation 
 
-Open terminal and clone/git pull the repo into any local directory
+Open a terminal and clone/git pull the repo into any local directory
 
 ```
 $ git clone git@github.com:diashenrique/isc-generate-db.git
