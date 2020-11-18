@@ -1,0 +1,7 @@
+ do $SYSTEM.OBJ.Load("/opt/irisapp/Installer.cls", "ck")
+ set sc = ##class(App.Installer).setup() 
+ 
+ zn "%SYS"
+ Do ##class(Security.Users).UnExpireUserPasswords("*")
+
+halt

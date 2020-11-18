@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+  <Document name="isc-generate-db.ZPM">
+    <Module>
+      <Name>isc-generate-db</Name>
+      <Version>1.0.2</Version>
+      <Description>Creating a new database, namespace, CSP/REST Application never been so easy</Description>
+      <Keywords>cli,database,namespace,webapp,sysadmin</Keywords>
+      <Packaging>module</Packaging>
+      <Resource Name="diashenrique.Utils.GenerateDB.cls"/>
+      <SourcesRoot>src</SourcesRoot>
+    </Module>
+  </Document>
+</Export>
