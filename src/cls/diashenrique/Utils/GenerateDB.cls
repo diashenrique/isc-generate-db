@@ -1,3 +1,5 @@
+/// Generate DB and Namespace with CSP, REST application 
+/// write $System.Status.GetErrorText(##class(diashenrique.Utils.GenerateDB).Install("NEWNS", 1, "NEWBD", 1, "REST.Dispatch"))
 Class diashenrique.Utils.GenerateDB
 {
 
@@ -9,6 +11,7 @@ Parameter TEMPGLOBALS = {$Select($Select($ZVersion["IRIS":1,1:0):"IRISTEMP",1:"C
 
 Parameter DATABASENAME = {$Select($Select($ZVersion["IRIS":1,1:0):"IRIS.DAT",1:"CACHE.DAT")};
 
+/// d ##class(diashenrique.Utils.GenerateDB).CreateNew()
 ClassMethod CreateNew()
 {
     Write !!
@@ -21,7 +24,16 @@ ClassMethod CreateNew()
         Read "Make this an Interoperability namespace? (Y/N) : ",tInteroperability,!
         Read "Do you want to split the database into CODE/DATA? (Y/N) : ",tCodeData,! 
         Read "Create a REST Application? (Y/N) : ",tREST,!
-
+		if $ZConvert(tREST,"U")="Y" {
+			read "Choose your Dispatcher classname <REST.Dispatch> : ",tREST,!
+			if tREST="" {
+				set tREST="REST.Dispatch"
+			}
+			elseif tREST'["." {
+				set tREST="N"
+			}
+		}
+        
         Write !!
 
         Write "=======================================",!
@@ -56,12 +68,12 @@ ClassMethod CreateNew()
         }
 
         Write "CSP Application => /csp/"_$ZConvert(tNamespaceName,"L"),!
-        If $Extract($ZConvert(tREST,"U"),1,1) = "Y" {
-            Set tREST = $$$YES
+        If tREST["." {
             Write "REST Application => /rest/"_$ZConvert(tNamespaceName,"L"),!	
+            Write "Dispatch Class: "_tREST,!	
         }
         Else {
-            Set tREST = $$$NO
+            Set tREST = ""
             Write "REST Application => No",!
         }
 
@@ -81,7 +93,7 @@ ClassMethod CreateNew()
     Quit
 }
 
-ClassMethod Install(pNamespace As %String, pCodeData As %Boolean, pPathDataset As %String, pInterOperability As %Boolean, pREST As %Boolean) As %Status
+ClassMethod Install(pNamespace As %String, pCodeData As %Boolean, pPathDataset As %String, pInterOperability As %Boolean, pREST As %String) As %Status
 {
     Set sc = $$$OK
     Try {
@@ -163,7 +175,7 @@ ClassMethod CreateDatabase(pNamespace As %String, pCodeData As %Boolean, pPathDa
 }
 
 /// Create new namespace
-ClassMethod CreateNamespace(pNamespace As %String, pCodeData As %Boolean, pInterOperability As %Boolean, pREST As %Boolean) As %Status [ Private ]
+ClassMethod CreateNamespace(pNamespace As %String, pCodeData As %Boolean, pInterOperability As %Boolean, pREST As %String) As %Status [ Private ]
 {
 
     New $Namespace
@@ -206,8 +218,8 @@ ClassMethod CreateNamespace(pNamespace As %String, pCodeData As %Boolean, pInter
             Write "done!",!
         }
         Set sc = $$$ADDSC(sc,..CreateCSPApplication(pNamespace))
-        If (pREST = $$$YES) {
-            Set sc = $$$ADDSC(sc,..createRESTApp(pNamespace))
+        If (pREST '= "") {
+            Set sc = $$$ADDSC(sc,..createRESTApp(pNamespace,pREST))
         }
     }
     Catch (err) {
@@ -253,7 +265,7 @@ ClassMethod CreateCSPApplication(pNamespace As %String) As %Status [ Private ]
 }
 
 /// Create REST Application
-ClassMethod createRESTApp(pNamespace As %String) As %Status
+ClassMethod createRESTApp(pNamespace As %String, DispatchClass = "REST.Dispatch") As %Status
 {
     #dim sc As %Status = $$$OK
 
@@ -269,14 +281,14 @@ ClassMethod createRESTApp(pNamespace As %String) As %Status
         Set props("AutheEnabled") = $$$AutheUnauthenticated
         Set props("NameSpace") = pNamespace
         Set props("IsNameSpaceDefault") = $$$NO
-        Set props("DispatchClass") = "REST.Dispatch"
+        Set props("DispatchClass") = DispatchClass
         Set props("MatchRoles")=":%All"
         Set sc = ##class(Security.Applications).Create(restName, .props)
         Write "done!",!
 
 
-        Write "Creating REST.Dispatch.cls ... "
-        Do ..CreateDispatchClass(pNamespace)
+        Write "Creating "_DispatchClass_".cls ... "
+        Do ..CreateDispatchClass(pNamespace,DispatchClass)
         Write "done!",!
     }
 
@@ -284,13 +296,13 @@ ClassMethod createRESTApp(pNamespace As %String) As %Status
 }
 
 /// Create a dummy REST service to populate messages
-ClassMethod CreateDispatchClass(pNamespace As %String) As %Status [ Private ]
+ClassMethod CreateDispatchClass(pNamespace As %String, classname = "REST.Dispatch") As %Status [ Private ]
 {
     New $Namespace
     Set $Namespace = pNamespace
     Set sc = $$$OK
     Try {
-        Set classname = "REST.Dispatch"
+        ;Set classname = "REST.Dispatch"
         Set class = ##class(%Dictionary.ClassDefinition).%New(classname)
         Set class.GeneratedBy = $ClassName()
         Set class.Super = "%CSP.REST"
