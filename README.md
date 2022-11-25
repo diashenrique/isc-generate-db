@@ -1,4 +1,6 @@
 ## Generate Database
+[![Quality Gate Status](https://community.objectscriptquality.com/api/project_badges/measure?project=intersystems_iris_community%2Fisc-generate-db&metric=alert_status)](https://community.objectscriptquality.com/dashboard?id=intersystems_iris_community%2Fisc-generate-db) 
+
 Creating a new database, namespace, CSP/REST Application never been so easy.  
 
 ## Installation 
